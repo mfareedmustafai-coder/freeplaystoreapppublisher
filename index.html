@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Play Store Publisher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Product+Sans&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0ebf8;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+
+        .form-container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding-top: 15px;
+        }
+
+        /* HEADER CARD */
+        .header-card {
+            background: white;
+            border-radius: 8px;
+            padding: 0; 
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 1px solid #dadce0;
+        }
+
+        /* 1. THE PICTURE (Banner) */
+        .header-banner {
+            width: 100%;
+            height: 150px;
+            background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header-content { padding: 24px; border-top: none; }
+
+        /* 2. THE HEADING */
+        .header-title {
+            font-family: 'Product Sans', sans-serif;
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            color: #202124;
+            line-height: 1.2;
+        }
+
+        /* GOOGLE ACCOUNT INFO STYLE */
+        .account-row {
+            border-top: 1px solid #dadce0;
+            margin-top: 15px;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .email-text { color: #202124; font-weight: 500; }
+        .switch-link { color: #1a73e8; text-decoration: none; cursor: pointer; margin-left: 5px; }
+        .switch-link:hover { text-decoration: underline; }
+        .cloud-icon { fill: #5f6368; vertical-align: middle; }
+
+        .not-shared-row {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        .not-shared-icon { width: 18px; height: 18px; fill: #5f6368; margin-right: 8px; }
+
+        .req-txt { color: #d93025; font-size: 12px; margin-top: 12px; }
+
+        /* CARDS */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 12px;
+            border: 1px solid #dadce0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .section-head {
+            background-color: #ffab91;
+            padding: 10px 24px;
+            margin: -24px -24px 24px -24px;
+            border-radius: 8px 8px 0 0;
+            font-size: 16px; font-weight: 500;
+        }
+
+        .q-title { font-size: 16px; margin-bottom: 15px; color: #202124; }
+        .req-star { color: #d93025; }
+
+        /* Inputs */
+        input[type="text"], input[type="email"], input[type="url"] {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #dadce0;
+            padding: 5px 0;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus { border-bottom: 2px solid #db4437; }
+        .input-error { border-bottom: 2px solid #d93025 !important; }
+
+        /* Buttons */
+        .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn {
+            background-color: #db4437;
+            color: white; border: none;
+            padding: 10px 24px; border-radius: 4px;
+            font-weight: 500; cursor: pointer; font-size: 14px;
+        }
+        .btn-flat {
+            background: none; border: none;
+            color: #db4437; font-weight: 500;
+            cursor: pointer; font-size: 14px;
+        }
+
+        /* Tabs */
+        .nav-tabs { text-align: center; margin-bottom: 15px; }
+        .nav-btn {
+            padding: 8px 16px; background: white;
+            border: 1px solid #dadce0; border-radius: 20px;
+            cursor: pointer; margin: 0 5px; font-size: 13px;
+        }
+        .nav-btn.active { background: #db4437; color: white; border-color: #db4437; }
+
+        /* Footer Creator */
+        .creator-footer {
+            text-align: center;
+            font-weight: 700;
+            color: #202124;
+            margin-top: 30px;
+            padding: 10px;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Google Footer */
+        .google-footer {
+            text-align: center;
+            color: #5f6368;
+            font-size: 12px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gf-logo { font-family: 'Product Sans', Arial, sans-serif; font-size: 24px; color: #5f6368; opacity: 0.8; }
+
+        /* Views */
+        #step-2, #step-3, #success-view, #status-view { display: none; }
+        
+        /* Status Badge */
+        .status-item { padding: 15px; border-bottom: 1px solid #eee; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; }
+        .bg-p { background: #fbc02d; color: black; }
+        .bg-a { background: #0f9d58; }
+        .bg-r { background: #d93025; }
+
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="switchTab('form')">Form</button>
+            <button class="nav-btn" onclick="switchTab('status')">My Requests</button>
+        </div>
+
+        <!-- FORM VIEW -->
+        <div id="form-view">
+            
+            <!-- HEADER CARD -->
+            <div class="header-card">
+                <!-- 1. BANNER IMAGE -->
+                <div class="header-banner"></div>
+                
+                <div class="header-content">
+                    <!-- 2. THE HEADING -->
+                    <h1 class="header-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
+                    
+                    <!-- 3. GOOGLE ACCOUNT STYLE -->
+                    <div class="account-row">
+                        <div>
+                            <span class="email-text">mfareedmustafai@gmail.com</span>
+                            <a href="#" class="switch-link">Switch account</a>
+                        </div>
+                        <svg class="cloud-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+                        </svg>
+                    </div>
+
+                    <div class="not-shared-row">
+                        <svg class="not-shared-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            <line x1="2" y1="2" x2="22" y2="22" stroke="#5f6368" stroke-width="2"/>
+                        </svg>
+                        <span>Not shared</span>
+                    </div>
+
+                    <div class="req-txt">* Indicates required question</div>
+                </div>
+            </div>
+
+            <form id="appForm" onsubmit="return false;">
+                
+                <!-- STEP 1 -->
+                <div id="step-1">
+                    <div class="card">
+                        <div class="q-title">What's your name <span class="req-star">*</span></div>
+                        <input type="text" id="userName" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">Email <span class="req-star">*</span></div>
+                        <input type="email" id="userEmail" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">WhatsApp & Contact Number <span class="req-star">*</span></div>
+                        <input type="text" id="userPhone" placeholder="Your answer">
+                    </div>
+                    <div class="btn-row" style="justify-content: flex-end;">
+                        <button class="btn" onclick="validateAndNext(1)">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div id="step-2">
+                    <div class="card" style="padding:0; overflow:hidden;">
+                        <div class="section-head">App Details</div>
+                        <div style="padding:24px;">
+                            <p style="margin:0; font-size:13px;">App details should be correct. Incorrect details will be rejected.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="q-title">App Name <span class="req-star">*</span></div>
+                        <input type="text" id="appName" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">App Logo Link (Image URL) <span class="req-star">*</span></div>
+                        <input type="url" id="appLogo" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">App Long Description <span class="req-star">*</span></div>
+                        <input type="text" id="appLongDesc" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">App Short Description <span class="req-star">*</span></div>
+                        <input type="text" id="appShortDesc" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">App Screenshot Links <span class="req-star">*</span></div>
+                        <input type="url" id="appScreenshots" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">APK Link <span class="req-star">*</span></div>
+                        <input type="url" id="apkLink" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">.AAB File Bundle Link <span class="req-star">*</span></div>
+                        <input type="url" id="aabLink" placeholder="Your answer">
+                    </div>
+                    <div class="card">
+                        <div class="q-title">Privacy Policy Link <span class="req-star">*</span></div>
+                        <input type="url" id="privacyLink" placeholder="Your answer">
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-flat" onclick="goBack(1)">Back</button>
+                        <button class="btn" onclick="validateAndNext(2)">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div id="step-3">
+                    <div class="card" style="padding:0; overflow:hidden;">
+                        <div class="section-head">Payment Options</div>
+                        <div style="padding:24px;">
+                            <div class="q-title">Sample of Multiple Choice: <span class="req-star">*</span></div>
+                            <div style="display:flex; align-items:center; margin-top:10px;">
+                                <input type="radio" id="payFree" name="payment" checked>
+                                <label for="payFree" style="margin-left:10px;">FREE---COST NO FEES WILL BE CHARGED...</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-flat" onclick="goBack(2)">Back</button>
+                        <button class="btn" onclick="finalSubmit()">Submit</button>
+                        <button class="btn-flat" onclick="location.reload()">Clear form</button>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- Success -->
+            <div id="success-view">
+                <div class="header-card">
+                    <div class="header-banner"></div>
+                    <div class="header-content">
+                        <h1 class="header-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
+                        <p style="margin-top:20px;">WE WILL CONTACT YOU AS SOON AS POSSIBLE PLEASE WAIT FOR SOME TIME...............</p>
+                        <a href="#" onclick="location.reload()" style="color:#db4437; text-decoration:none;">Submit another response</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS VIEW -->
+        <div id="status-view">
+            <div class="header-card">
+                <div class="header-banner"></div>
+                <div class="header-content">
+                    <h1 class="header-title">Check Status</h1>
+                    <p>Enter your email to see your app status.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="q-title">Your Email</div>
+                <input type="email" id="statusEmail" placeholder="yourname@gmail.com">
+                <div class="btn-row" style="justify-content:flex-start;">
+                    <button class="btn" onclick="checkStatus()">Check</button>
+                </div>
+            </div>
+            <div id="resultsArea" class="card" style="display:none;"></div>
+        </div>
+
+        <!-- CREATOR FOOTER -->
+        <div class="creator-footer">
+            CREATED BY M.FAREED MUSTAFAI
+        </div>
+
+        <!-- GOOGLE FORMS FOOTER -->
+        <div class="google-footer">
+            <span class="gf-logo">Google <span style="color:#5f6368; font-weight:400;">Forms</span></span>
+            <div style="font-size: 11px;">This content is neither created nor endorsed by Google.</div>
+            <div style="font-size: 11px; margin-top:5px;">Report Abuse - Terms of Service - Privacy Policy</div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPXwagCODQ85FN4SOF4x20EZxUAmybX6I",
+            authDomain: "free-play-store-app-publisher.firebaseapp.com",
+            databaseURL: "https://free-play-store-app-publisher-default-rtdb.firebaseio.com",
+            projectId: "free-play-store-app-publisher",
+            storageBucket: "free-play-store-app-publisher.firebasestorage.app",
+            messagingSenderId: "403752263394",
+            appId: "1:403752263394:web:2258ddfe93de3102c788bb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function validateAndNext(currentStep) {
+            let isValid = true;
+            const check = (id) => {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) { el.classList.add('input-error'); isValid = false; }
+                else { el.classList.remove('input-error'); }
+            };
+
+            if (currentStep === 1) {
+                check('userName'); check('userEmail'); check('userPhone');
+                if (isValid) {
+                    document.getElementById('step-1').style.display = 'none';
+                    document.getElementById('step-2').style.display = 'block';
+                    window.scrollTo(0, 0);
+                } else { alert("Please fill required fields."); }
+            }
+            if (currentStep === 2) {
+                check('appName'); check('appLogo'); check('appLongDesc'); check('apkLink');
+                if (isValid) {
+                    document.getElementById('step-2').style.display = 'none';
+                    document.getElementById('step-3').style.display = 'block';
+                    window.scrollTo(0, 0);
+                } else { alert("Please fill App Name, Logo, Description and APK Link."); }
+            }
+        }
+
+        function goBack(toStep) {
+            if (toStep === 1) {
+                document.getElementById('step-2').style.display = 'none';
+                document.getElementById('step-1').style.display = 'block';
+            }
+            if (toStep === 2) {
+                document.getElementById('step-3').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function finalSubmit() {
+            const submissionData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                appName: document.getElementById('appName').value,
+                appLogo: document.getElementById('appLogo').value,
+                appLongDesc: document.getElementById('appLongDesc').value,
+                appShortDesc: document.getElementById('appShortDesc').value,
+                screenshots: document.getElementById('appScreenshots').value,
+                apkLink: document.getElementById('apkLink').value,
+                aabLink: document.getElementById('aabLink').value,
+                privacyLink: document.getElementById('privacyLink').value,
+                paymentMethod: "Free",
+                status: "Pending",
+                timestamp: Date.now()
+            };
+
+            const newRef = db.ref('submissions').push();
+            newRef.set(submissionData)
+                .then(() => {
+                    document.getElementById('step-3').style.display = 'none';
+                    document.getElementById('success-view').style.display = 'block';
+                    window.scrollTo(0, 0);
+                })
+                .catch((error) => alert("Submission Failed: " + error.message));
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (tab === 'form') {
+                document.getElementById('form-view').style.display = 'block';
+                document.getElementById('status-view').style.display = 'none';
+                document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
+            } else {
+                document.getElementById('form-view').style.display = 'none';
+                document.getElementById('status-view').style.display = 'block';
+                document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
+            }
+        }
+
+        function checkStatus() {
+            const email = document.getElementById('statusEmail').value.trim();
+            if (!email) { alert("Please enter email"); return; }
+            const resultsDiv = document.getElementById('resultsArea');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = "<p>Loading...</p>";
+
+            db.ref('submissions').orderByChild('email').equalTo(email).once('value', (snapshot) => {
+                resultsDiv.innerHTML = "";
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const val = child.val();
+                        let badgeClass = "bg-p";
+                        if(val.status === 'Accepted') badgeClass = "bg-a";
+                        if(val.status === 'Rejected') badgeClass = "bg-r";
+                        const itemHtml = `
+                            <div class="status-item">
+                                <div style="display:flex; align-items:center;">
+                                    ${val.appLogo ? `<img src="${val.appLogo}" style="width:40px; height:40px; border-radius:4px; margin-right:10px;">` : ''}
+                                    <div>
+                                        <strong>${val.appName}</strong><br>
+                                        <span style="font-size:12px; color:#555;">${new Date(val.timestamp).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top:5px;">Status: <span class="badge ${badgeClass}">${val.status}</span></div>
+                                ${val.status === 'Accepted' ? '<div style="margin-top:5px; color:#0f9d58; font-weight:500; font-size:13px;">✅ Approved! We will contact you on WhatsApp soon.</div>' : ''}
+                            </div>
+                        `;
+                        resultsDiv.innerHTML += itemHtml;
+                    });
+                } else { resultsDiv.innerHTML = "<p style='padding:20px; text-align:center;'>No applications found.</p>"; }
+            });
+        }
+    </script>
+</body>
+</html>
