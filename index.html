@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Play Store Publisher</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Product+Sans&display=swap" rel="stylesheet">
+    <!-- Google Fonts including a stylish one for the second heading -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Product+Sans&family=Kaushan+Script&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #f0ebf8;
@@ -25,32 +26,47 @@
             border-radius: 8px;
             padding: 0; 
             margin-bottom: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             overflow: hidden;
             border: 1px solid #dadce0;
+            border-top: 10px solid #db4437; /* Google Form Red Top Border */
         }
 
-        /* 1. THE PICTURE (Banner) */
+        /* BANNER IMAGE */
         .header-banner {
             width: 100%;
-            height: 150px;
+            height: 160px;
             background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
             background-size: cover;
             background-position: center;
         }
 
-        .header-content { padding: 24px; border-top: none; }
+        .header-content {
+            padding: 24px;
+        }
 
-        /* 2. THE HEADING */
-        .header-title {
+        /* 1. MAIN HEADING (Top One) */
+        .header-main-title {
             font-family: 'Product Sans', sans-serif;
             font-size: 32px;
-            margin: 0 0 10px 0;
             color: #202124;
+            margin: 0;
+            padding-bottom: 15px; /* Spacing neeche */
+            border-bottom: 1px solid #dadce0; /* Line to separate */
             line-height: 1.2;
         }
 
-        /* GOOGLE ACCOUNT INFO STYLE */
+        /* 2. SUB HEADING (Bottom One - Alag dikhne ke liye) */
+        .header-sub-title {
+            font-family: 'Kaushan Script', cursive; /* Stylish Font like screenshot */
+            font-size: 36px;
+            color: #db4437; /* Thoda alag color highlight ke liye */
+            margin-top: 15px; /* Spacing uper */
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        /* GOOGLE ACCOUNT INFO */
         .account-row {
             border-top: 1px solid #dadce0;
             margin-top: 15px;
@@ -65,7 +81,7 @@
         .email-text { color: #202124; font-weight: 500; }
         .switch-link { color: #1a73e8; text-decoration: none; cursor: pointer; margin-left: 5px; }
         .switch-link:hover { text-decoration: underline; }
-        .cloud-icon { fill: #5f6368; vertical-align: middle; }
+        .cloud-icon { fill: #5f6368; vertical-align: middle; opacity: 0.7; }
 
         .not-shared-row {
             display: flex;
@@ -75,10 +91,9 @@
             color: #5f6368;
         }
         .not-shared-icon { width: 18px; height: 18px; fill: #5f6368; margin-right: 8px; }
+        .req-txt { color: #d93025; font-size: 12px; margin-top: 15px; }
 
-        .req-txt { color: #d93025; font-size: 12px; margin-top: 12px; }
-
-        /* CARDS */
+        /* CARDS & INPUTS */
         .card {
             background: white;
             border-radius: 8px;
@@ -90,7 +105,7 @@
 
         .section-head {
             background-color: #ffab91;
-            padding: 10px 24px;
+            padding: 12px 24px;
             margin: -24px -24px 24px -24px;
             border-radius: 8px 8px 0 0;
             font-size: 16px; font-weight: 500;
@@ -99,7 +114,6 @@
         .q-title { font-size: 16px; margin-bottom: 15px; color: #202124; }
         .req-star { color: #d93025; }
 
-        /* Inputs */
         input[type="text"], input[type="email"], input[type="url"] {
             width: 100%;
             border: none;
@@ -112,7 +126,6 @@
         input:focus { border-bottom: 2px solid #db4437; }
         .input-error { border-bottom: 2px solid #d93025 !important; }
 
-        /* Buttons */
         .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
         .btn {
             background-color: #db4437;
@@ -135,65 +148,47 @@
         }
         .nav-btn.active { background: #db4437; color: white; border-color: #db4437; }
 
-        /* Footer Creator */
+        /* Footers */
         .creator-footer {
-            text-align: center;
-            font-weight: 700;
-            color: #202124;
-            margin-top: 30px;
-            padding: 10px;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            text-align: center; font-weight: 700; color: #202124; margin-top: 30px; padding: 10px; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase;
         }
-
-        /* Google Footer */
         .google-footer {
-            text-align: center;
-            color: #5f6368;
-            font-size: 12px;
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center; color: #5f6368; font-size: 12px; margin-top: 5px; display: flex; flex-direction: column; align-items: center;
         }
         .gf-logo { font-family: 'Product Sans', Arial, sans-serif; font-size: 24px; color: #5f6368; opacity: 0.8; }
 
-        /* Views */
+        /* Hidden Views */
         #step-2, #step-3, #success-view, #status-view { display: none; }
         
-        /* Status Badge */
         .status-item { padding: 15px; border-bottom: 1px solid #eee; }
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; }
         .bg-p { background: #fbc02d; color: black; }
         .bg-a { background: #0f9d58; }
         .bg-r { background: #d93025; }
-
     </style>
 </head>
 <body>
 
     <div class="form-container">
         
-        <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <button class="nav-btn active" onclick="switchTab('form')">Form</button>
             <button class="nav-btn" onclick="switchTab('status')">My Requests</button>
         </div>
 
-        <!-- FORM VIEW -->
         <div id="form-view">
             
-            <!-- HEADER CARD -->
             <div class="header-card">
-                <!-- 1. BANNER IMAGE -->
                 <div class="header-banner"></div>
                 
                 <div class="header-content">
-                    <!-- 2. THE HEADING -->
-                    <h1 class="header-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
+                    <!-- Heading 1 (Separated) -->
+                    <h1 class="header-main-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
                     
-                    <!-- 3. GOOGLE ACCOUNT STYLE -->
+                    <!-- Heading 2 (Separated & Styled) -->
+                    <h2 class="header-sub-title">Submit For Better Connection</h2>
+                    
+                    <!-- Google Account Info -->
                     <div class="account-row">
                         <div>
                             <span class="email-text">mfareedmustafai@gmail.com</span>
@@ -307,12 +302,11 @@
 
             </form>
 
-            <!-- Success -->
             <div id="success-view">
                 <div class="header-card">
                     <div class="header-banner"></div>
                     <div class="header-content">
-                        <h1 class="header-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
+                        <h1 class="header-main-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
                         <p style="margin-top:20px;">WE WILL CONTACT YOU AS SOON AS POSSIBLE PLEASE WAIT FOR SOME TIME...............</p>
                         <a href="#" onclick="location.reload()" style="color:#db4437; text-decoration:none;">Submit another response</a>
                     </div>
@@ -320,12 +314,11 @@
             </div>
         </div>
 
-        <!-- STATUS VIEW -->
         <div id="status-view">
             <div class="header-card">
                 <div class="header-banner"></div>
                 <div class="header-content">
-                    <h1 class="header-title">Check Status</h1>
+                    <h1 class="header-main-title">Check Status</h1>
                     <p>Enter your email to see your app status.</p>
                 </div>
             </div>
@@ -339,12 +332,8 @@
             <div id="resultsArea" class="card" style="display:none;"></div>
         </div>
 
-        <!-- CREATOR FOOTER -->
-        <div class="creator-footer">
-            CREATED BY M.FAREED MUSTAFAI
-        </div>
+        <div class="creator-footer">CREATED BY M.FAREED MUSTAFAI</div>
 
-        <!-- GOOGLE FORMS FOOTER -->
         <div class="google-footer">
             <span class="gf-logo">Google <span style="color:#5f6368; font-weight:400;">Forms</span></span>
             <div style="font-size: 11px;">This content is neither created nor endorsed by Google.</div>
