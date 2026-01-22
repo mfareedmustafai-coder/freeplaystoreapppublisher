@@ -9,13 +9,13 @@
         body { background-color: #f0ebf8; font-family: 'Roboto', sans-serif; margin: 0; padding-bottom: 50px; }
         .form-container { max-width: 640px; margin: 0 auto; padding-top: 15px; }
 
-        /* --- TICKER CONTAINER (Fixed Alignment) --- */
+        /* --- TICKER CONTAINER --- */
         .ticker-container {
             width: 100%;
             background-color: #f8f9fa;
             border: 1px solid #dadce0;
             border-radius: 6px;
-            height: 48px; /* Fixed Height */
+            height: 48px;
             display: flex;
             align-items: center;
             overflow: hidden;
@@ -57,13 +57,10 @@
             font-size: 17px;
             color: #333;
             font-weight: bold;
-            
-            /* FIX: Use Line-Height for perfect center instead of Transform */
             top: 0;
-            height: 48px; /* Same as container */
-            line-height: 48px; /* Text sits exactly in middle */
-            
-            will-change: transform;
+            height: 48px;
+            line-height: 48px;
+            will-change: transform, left, right;
         }
 
         /* --- STANDARD STYLES --- */
@@ -174,61 +171,83 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- FIXED TICKER LOGIC (NO JUMPING) ---
-        let headlines = [];
+        // --- IMPROVED MULTI-HEADLINE TICKER LOGIC ---
+        let headlinesList = [];
         let currentIndex = 0;
         let tickerWrapper = document.getElementById('ticker-wrapper');
+        let isAnimating = false; // Flag to prevent overlaps
 
         db.ref('headlines').on('value', snap => {
-            headlines = [];
+            headlinesList = [];
             if(snap.exists()) {
-                snap.forEach(c => headlines.push(c.val().text));
+                snap.forEach(c => headlinesList.push(c.val().text));
             } else {
-                headlines = ["Welcome to our App Publisher Portal"];
+                headlinesList = ["Welcome to our App Publisher Portal"];
             }
-            if(tickerWrapper.childElementCount === 0) startTickerCycle();
+            
+            // If animation is not currently running, start it
+            if (!isAnimating) {
+                currentIndex = 0;
+                startTickerAnimation();
+            }
         });
 
         function isUrdu(text) {
             return /[\u0600-\u06FF]/.test(text);
         }
 
-        function startTickerCycle() {
-            if(headlines.length === 0) return;
+        function startTickerAnimation() {
+            if (headlinesList.length === 0) return;
+            isAnimating = true;
 
-            const text = headlines[currentIndex];
+            const text = headlinesList[currentIndex];
             const el = document.createElement('div');
             el.className = 'headline-item';
             el.innerText = text;
             
-            tickerWrapper.innerHTML = ''; 
+            // Clear and add new
+            tickerWrapper.innerHTML = '';
             tickerWrapper.appendChild(el);
 
-            // Calculations
-            const containerWidth = tickerWrapper.offsetWidth;
-            const textWidth = el.scrollWidth; 
-            const totalDistance = containerWidth + textWidth; 
-            const duration = totalDistance / 50; // Speed 50px/sec
+            // Get Dimensions
+            const containerW = tickerWrapper.offsetWidth;
+            const textW = el.offsetWidth; // Use offsetWidth for text width
+            
+            // Speed: 50px per second (Very Slow & Smooth)
+            const totalDistance = containerW + textW + 50; 
+            const duration = totalDistance / 50; 
 
+            // Setup Transition
             el.style.transition = `transform ${duration}s linear`;
 
+            // DIRECTION LOGIC
             if(isUrdu(text)) {
-                // Urdu: Left to Right
-                el.style.left = `-${textWidth}px`; 
-                el.style.right = "auto";
-                void el.offsetWidth; // Trigger paint
-                el.style.transform = `translateX(${containerWidth + textWidth}px)`;
+                // Urdu: Starts Left (Hidden), Goes Right
+                el.style.left = `-${textW}px`;
+                el.style.right = 'auto';
+                
+                // Trigger Reflow
+                void el.offsetWidth;
+
+                // Animate to Right
+                el.style.transform = `translateX(${containerW + textW}px)`;
             } else {
-                // English: Right to Left
-                el.style.left = `${containerWidth}px`;
-                el.style.right = "auto";
-                void el.offsetWidth; // Trigger paint
-                el.style.transform = `translateX(-${containerWidth + textWidth}px)`;
+                // English: Starts Right (Hidden), Goes Left
+                el.style.left = `${containerW}px`;
+                el.style.right = 'auto';
+
+                // Trigger Reflow
+                void el.offsetWidth;
+
+                // Animate to Left
+                el.style.transform = `translateX(-${containerW + textW}px)`;
             }
 
+            // Loop logic
             setTimeout(() => {
-                currentIndex = (currentIndex + 1) % headlines.length;
-                startTickerCycle();
+                // Increment Index (Loop back to 0 if at end)
+                currentIndex = (currentIndex + 1) % headlinesList.length;
+                startTickerAnimation();
             }, duration * 1000);
         }
 
