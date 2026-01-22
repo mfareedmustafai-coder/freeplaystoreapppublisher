@@ -9,13 +9,13 @@
         body { background-color: #f0ebf8; font-family: 'Roboto', sans-serif; margin: 0; padding-bottom: 50px; }
         .form-container { max-width: 640px; margin: 0 auto; padding-top: 15px; }
 
-        /* --- TICKER CONTAINER --- */
+        /* --- TICKER CONTAINER (Fixed Alignment) --- */
         .ticker-container {
             width: 100%;
             background-color: #f8f9fa;
             border: 1px solid #dadce0;
             border-radius: 6px;
-            height: 48px;
+            height: 48px; /* Fixed Height */
             display: flex;
             align-items: center;
             overflow: hidden;
@@ -46,7 +46,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            padding-right: 90px; /* Label space */
+            padding-right: 90px;
             overflow: hidden; 
         }
 
@@ -57,8 +57,12 @@
             font-size: 17px;
             color: #333;
             font-weight: bold;
-            top: 50%;
-            transform: translateY(-50%);
+            
+            /* FIX: Use Line-Height for perfect center instead of Transform */
+            top: 0;
+            height: 48px; /* Same as container */
+            line-height: 48px; /* Text sits exactly in middle */
+            
             will-change: transform;
         }
 
@@ -170,7 +174,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- FIXED TICKER LOGIC (FULL TEXT VISIBLE) ---
+        // --- FIXED TICKER LOGIC (NO JUMPING) ---
         let headlines = [];
         let currentIndex = 0;
         let tickerWrapper = document.getElementById('ticker-wrapper');
@@ -186,7 +190,6 @@
         });
 
         function isUrdu(text) {
-            // Check for Arabic/Urdu unicode characters
             return /[\u0600-\u06FF]/.test(text);
         }
 
@@ -198,47 +201,31 @@
             el.className = 'headline-item';
             el.innerText = text;
             
-            // Add to DOM to calculate width
             tickerWrapper.innerHTML = ''; 
             tickerWrapper.appendChild(el);
 
-            // Calculate precise dimensions
+            // Calculations
             const containerWidth = tickerWrapper.offsetWidth;
-            const textWidth = el.scrollWidth; // Actual width of text
-            
-            // Speed: 50 pixels per second (Very Slow & Smooth)
-            // Distance covers fully entering and fully leaving
+            const textWidth = el.scrollWidth; 
             const totalDistance = containerWidth + textWidth; 
-            const duration = totalDistance / 50; 
+            const duration = totalDistance / 50; // Speed 50px/sec
 
-            // Apply Transition
             el.style.transition = `transform ${duration}s linear`;
 
             if(isUrdu(text)) {
-                // Urdu: Moves Left -> Right (English side -> Urdu side)
-                // Start: Fully left (outside)
+                // Urdu: Left to Right
                 el.style.left = `-${textWidth}px`; 
                 el.style.right = "auto";
-                
-                // Force Browser Paint
-                void el.offsetWidth;
-
-                // End: Fully right (outside)
+                void el.offsetWidth; // Trigger paint
                 el.style.transform = `translateX(${containerWidth + textWidth}px)`;
             } else {
-                // English: Moves Right -> Left (Urdu side -> English side)
-                // Start: Fully right (outside)
+                // English: Right to Left
                 el.style.left = `${containerWidth}px`;
                 el.style.right = "auto";
-
-                // Force Browser Paint
-                void el.offsetWidth;
-
-                // End: Fully left (outside)
+                void el.offsetWidth; // Trigger paint
                 el.style.transform = `translateX(-${containerWidth + textWidth}px)`;
             }
 
-            // Loop Next
             setTimeout(() => {
                 currentIndex = (currentIndex + 1) % headlines.length;
                 startTickerCycle();
