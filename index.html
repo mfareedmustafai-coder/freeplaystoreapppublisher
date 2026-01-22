@@ -9,10 +9,10 @@
         body { background-color: #f0ebf8; font-family: 'Roboto', sans-serif; margin: 0; padding-bottom: 50px; }
         .form-container { max-width: 640px; margin: 0 auto; padding-top: 15px; }
 
-        /* --- SMART NEWS TICKER --- */
+        /* --- TICKER CONTAINER --- */
         .ticker-container {
             width: 100%;
-            background-color: #f8f9fa; /* Grey Background */
+            background-color: #f8f9fa;
             border: 1px solid #dadce0;
             border-radius: 6px;
             height: 48px;
@@ -25,7 +25,7 @@
         }
 
         .ticker-label {
-            background-color: #b71c1c; /* Red Label */
+            background-color: #b71c1c;
             color: white;
             padding: 0 15px;
             height: 100%;
@@ -46,7 +46,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            padding-right: 90px; /* Space so text goes behind label */
+            padding-right: 90px; /* Label space */
             overflow: hidden; 
         }
 
@@ -58,12 +58,11 @@
             color: #333;
             font-weight: bold;
             top: 50%;
-            transform: translateY(-50%); /* Vertical Center */
-            will-change: transform; /* Performance optimization */
+            transform: translateY(-50%);
+            will-change: transform;
         }
 
-        /* -------------------------------- */
-
+        /* --- STANDARD STYLES --- */
         .header-card { background: white; border-radius: 8px; padding: 0; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); overflow: hidden; border: 1px solid #dadce0; }
         .header-banner { width: 100%; height: 160px; background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; }
         .header-content { padding: 24px; }
@@ -71,10 +70,9 @@
         .header-sub-title { font-family: 'Kaushan Script', cursive; font-size: 32px; color: #db4437; margin-top: 10px; }
         .account-row, .not-shared-row { display: flex; align-items: center; font-size: 13px; color: #5f6368; margin-top: 10px; }
         .account-row { justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
-        
         .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 12px; border: 1px solid #dadce0; }
         .q-title { font-size: 16px; margin-bottom: 15px; color: #202124; }
-        input[type="text"], input[type="email"], input[type="url"] { width: 100%; border: none; border-bottom: 1px solid #ddd; padding: 5px 0; outline: none; }
+        input { width: 100%; border: none; border-bottom: 1px solid #ddd; padding: 5px 0; outline: none; }
         input:focus { border-bottom: 2px solid #db4437; }
         .btn { background: #db4437; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
         .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
@@ -96,11 +94,9 @@
             <button class="nav-btn" onclick="switchTab('status')">My Requests</button>
         </div>
 
-        <!-- TICKER CONTAINER -->
+        <!-- TICKER -->
         <div class="ticker-container">
-            <div class="ticker-wrapper" id="ticker-wrapper">
-                <!-- Text runs here -->
-            </div>
+            <div class="ticker-wrapper" id="ticker-wrapper"></div>
             <div class="ticker-label">اہم اعلان</div>
         </div>
 
@@ -110,7 +106,6 @@
                 <div class="header-content">
                     <h1 class="header-main-title">FREE PLAY STORE APP AND GAME PUBLISHER</h1>
                     <h2 class="header-sub-title">Submit For Better Connection</h2>
-                    
                     <div class="account-row">
                         <div><span style="color:#202124; font-weight:500;">mfareedmustafai@gmail.com</span> <a href="#" style="color:#1a73e8; text-decoration:none;">Switch account</a></div>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
@@ -175,25 +170,23 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- NEW TICKER LOGIC ---
+        // --- FIXED TICKER LOGIC (FULL TEXT VISIBLE) ---
         let headlines = [];
         let currentIndex = 0;
         let tickerWrapper = document.getElementById('ticker-wrapper');
 
-        // Load headlines from DB
         db.ref('headlines').on('value', snap => {
             headlines = [];
             if(snap.exists()) {
                 snap.forEach(c => headlines.push(c.val().text));
             } else {
-                headlines = ["Welcome to Free Play Store App Publisher"];
+                headlines = ["Welcome to our App Publisher Portal"];
             }
-            // If there's no active headline running, start it
             if(tickerWrapper.childElementCount === 0) startTickerCycle();
         });
 
-        // Detect Urdu (Arabic Script)
         function isUrdu(text) {
+            // Check for Arabic/Urdu unicode characters
             return /[\u0600-\u06FF]/.test(text);
         }
 
@@ -204,50 +197,48 @@
             const el = document.createElement('div');
             el.className = 'headline-item';
             el.innerText = text;
-            el.style.top = "12px"; // Vertically center
-
-            // Clear previous and add new
+            
+            // Add to DOM to calculate width
             tickerWrapper.innerHTML = ''; 
             tickerWrapper.appendChild(el);
 
+            // Calculate precise dimensions
             const containerWidth = tickerWrapper.offsetWidth;
-            const textWidth = el.offsetWidth;
+            const textWidth = el.scrollWidth; // Actual width of text
             
-            // Calculate Duration: Very Slow Speed (40px per second)
-            const totalDistance = containerWidth + textWidth;
-            const duration = totalDistance / 40; 
+            // Speed: 50 pixels per second (Very Slow & Smooth)
+            // Distance covers fully entering and fully leaving
+            const totalDistance = containerWidth + textWidth; 
+            const duration = totalDistance / 50; 
 
             // Apply Transition
             el.style.transition = `transform ${duration}s linear`;
 
-            // DIRECTION LOGIC
             if(isUrdu(text)) {
-                // Urdu: Left -> Right (English Side -> Urdu Side)
-                // Start: Left edge (off screen) -> -textWidth
-                // End: Right edge (off screen) -> containerWidth
-                el.style.left = "0"; 
-                el.style.transform = `translateX(-${textWidth}px)`;
-
-                // Force reflow (Browser ko batao render kare)
-                void el.offsetWidth; 
-
-                // Animate to Right
-                el.style.transform = `translateX(${containerWidth}px)`;
-            } else {
-                // English: Right -> Left (Urdu Side -> English Side)
-                // Start: Right edge -> containerWidth
-                // End: Left edge -> -textWidth
-                el.style.left = "0";
-                el.style.transform = `translateX(${containerWidth}px)`;
-
-                // Force reflow
+                // Urdu: Moves Left -> Right (English side -> Urdu side)
+                // Start: Fully left (outside)
+                el.style.left = `-${textWidth}px`; 
+                el.style.right = "auto";
+                
+                // Force Browser Paint
                 void el.offsetWidth;
 
-                // Animate to Left
-                el.style.transform = `translateX(-${textWidth}px)`;
+                // End: Fully right (outside)
+                el.style.transform = `translateX(${containerWidth + textWidth}px)`;
+            } else {
+                // English: Moves Right -> Left (Urdu side -> English side)
+                // Start: Fully right (outside)
+                el.style.left = `${containerWidth}px`;
+                el.style.right = "auto";
+
+                // Force Browser Paint
+                void el.offsetWidth;
+
+                // End: Fully left (outside)
+                el.style.transform = `translateX(-${containerWidth + textWidth}px)`;
             }
 
-            // Loop to next headline after animation finishes
+            // Loop Next
             setTimeout(() => {
                 currentIndex = (currentIndex + 1) % headlines.length;
                 startTickerCycle();
