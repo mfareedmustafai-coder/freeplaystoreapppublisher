@@ -9,10 +9,10 @@
         body { background-color: #f0ebf8; font-family: 'Roboto', sans-serif; margin: 0; padding-bottom: 50px; }
         .form-container { max-width: 640px; margin: 0 auto; padding-top: 15px; }
 
-        /* --- TICKER CONTAINER --- */
+        /* --- TICKER STRIP STYLES --- */
         .ticker-container {
             width: 100%;
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Grey Background */
             border: 1px solid #dadce0;
             border-radius: 6px;
             height: 48px;
@@ -21,11 +21,11 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
+            margin-bottom: 10px; /* Space between multiple strips */
         }
 
         .ticker-label {
-            background-color: #b71c1c;
+            background-color: #b71c1c; /* Red Label */
             color: white;
             padding: 0 15px;
             height: 100%;
@@ -46,7 +46,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            padding-right: 90px;
+            padding-right: 90px; /* Space for Label */
             overflow: hidden; 
         }
 
@@ -63,7 +63,7 @@
             will-change: transform, left, right;
         }
 
-        /* --- STANDARD STYLES --- */
+        /* --- STANDARD STYLES (NO CHANGE) --- */
         .header-card { background: white; border-radius: 8px; padding: 0; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); overflow: hidden; border: 1px solid #dadce0; }
         .header-banner { width: 100%; height: 160px; background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; }
         .header-content { padding: 24px; }
@@ -95,10 +95,9 @@
             <button class="nav-btn" onclick="switchTab('status')">My Requests</button>
         </div>
 
-        <!-- TICKER -->
-        <div class="ticker-container">
-            <div class="ticker-wrapper" id="ticker-wrapper"></div>
-            <div class="ticker-label">اہم اعلان</div>
+        <!-- AREA FOR MULTIPLE TICKER STRIPS -->
+        <div id="tickers-area">
+            <!-- Headlines will be added here one by one -->
         </div>
 
         <div id="form-view">
@@ -171,24 +170,19 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- IMPROVED MULTI-HEADLINE TICKER LOGIC ---
-        let headlinesList = [];
-        let currentIndex = 0;
-        let tickerWrapper = document.getElementById('ticker-wrapper');
-        let isAnimating = false; // Flag to prevent overlaps
+        // --- NEW LOGIC: SEPARATE STRIP FOR EACH HEADLINE ---
+        const tickersArea = document.getElementById('tickers-area');
 
         db.ref('headlines').on('value', snap => {
-            headlinesList = [];
-            if(snap.exists()) {
-                snap.forEach(c => headlinesList.push(c.val().text));
-            } else {
-                headlinesList = ["Welcome to our App Publisher Portal"];
-            }
+            tickersArea.innerHTML = ''; // Reset area
             
-            // If animation is not currently running, start it
-            if (!isAnimating) {
-                currentIndex = 0;
-                startTickerAnimation();
+            if(snap.exists()) {
+                // Loop through each headline and create a Separate Strip
+                snap.forEach(c => {
+                    createSeparateTicker(c.val().text);
+                });
+            } else {
+                createSeparateTicker("Welcome to Free Play Store App Publisher");
             }
         });
 
@@ -196,58 +190,79 @@
             return /[\u0600-\u06FF]/.test(text);
         }
 
-        function startTickerAnimation() {
-            if (headlinesList.length === 0) return;
-            isAnimating = true;
+        // Creates a full independent ticker strip for one text
+        function createSeparateTicker(text) {
+            // 1. Create Structure
+            const container = document.createElement('div');
+            container.className = 'ticker-container';
 
-            const text = headlinesList[currentIndex];
+            const label = document.createElement('div');
+            label.className = 'ticker-label';
+            label.innerText = 'اہم اعلان';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'ticker-wrapper';
+
             const el = document.createElement('div');
             el.className = 'headline-item';
             el.innerText = text;
+
+            wrapper.appendChild(el);
+            container.appendChild(wrapper);
+            container.appendChild(label);
+            tickersArea.appendChild(container); // Add to page
+
+            // 2. Start Animation for this specific element
+            animateElement(el, wrapper, text);
+        }
+
+        function animateElement(el, wrapper, text) {
+            const containerW = wrapper.offsetWidth;
+            const textW = el.scrollWidth; 
             
-            // Clear and add new
-            tickerWrapper.innerHTML = '';
-            tickerWrapper.appendChild(el);
+            // Speed Calculation (Very Slow)
+            const totalDistance = containerW + textW;
+            const duration = totalDistance / 50; // 50px/sec
 
-            // Get Dimensions
-            const containerW = tickerWrapper.offsetWidth;
-            const textW = el.offsetWidth; // Use offsetWidth for text width
-            
-            // Speed: 50px per second (Very Slow & Smooth)
-            const totalDistance = containerW + textW + 50; 
-            const duration = totalDistance / 50; 
+            // Direction Logic
+            const urdu = isUrdu(text);
 
-            // Setup Transition
-            el.style.transition = `transform ${duration}s linear`;
-
-            // DIRECTION LOGIC
-            if(isUrdu(text)) {
-                // Urdu: Starts Left (Hidden), Goes Right
+            // Initial Position
+            if(urdu) {
+                // Left -> Right
                 el.style.left = `-${textW}px`;
                 el.style.right = 'auto';
-                
-                // Trigger Reflow
-                void el.offsetWidth;
-
-                // Animate to Right
-                el.style.transform = `translateX(${containerW + textW}px)`;
             } else {
-                // English: Starts Right (Hidden), Goes Left
+                // Right -> Left
                 el.style.left = `${containerW}px`;
                 el.style.right = 'auto';
+            }
 
-                // Trigger Reflow
-                void el.offsetWidth;
+            // Force Reflow
+            void el.offsetWidth;
 
-                // Animate to Left
+            // Apply Transition
+            el.style.transition = `transform ${duration}s linear`;
+
+            // Start Movement
+            if(urdu) {
+                el.style.transform = `translateX(${containerW + textW}px)`;
+            } else {
                 el.style.transform = `translateX(-${containerW + textW}px)`;
             }
 
             // Loop logic
+            // Because this is a separate strip, it just loops itself
             setTimeout(() => {
-                // Increment Index (Loop back to 0 if at end)
-                currentIndex = (currentIndex + 1) % headlinesList.length;
-                startTickerAnimation();
+                // Reset
+                el.style.transition = 'none';
+                el.style.transform = 'translateX(0)';
+                
+                // Restart
+                setTimeout(() => {
+                    animateElement(el, wrapper, text);
+                }, 100);
+                
             }, duration * 1000);
         }
 
